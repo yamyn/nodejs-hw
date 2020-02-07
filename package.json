@@ -1,0 +1,32 @@
+{
+    "name": "nodejs-hw",
+    "version": "1.0.0",
+    "description": "Home work for node.js course in GoIT Academy",
+    "main": "index.js",
+    "scripts": {
+        "start": "node ./src/index.js",
+        "dev": "nodemon ./src/index.js",
+        " commit ": " git-cz ",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/yamyn/nodejs-hw.git"
+    },
+    "author": "Yaroslav Mynchenko",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/yamyn/nodejs-hw/issues"
+    },
+    "homepage": "https://github.com/yamyn/nodejs-hw#readme",
+    "devDependencies": {
+        "commitizen": "^4.0.3",
+        "cz-conventional-changelog": "^3.1.0",
+        "nodemon": "^2.0.2"
+    },
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/cz-conventional-changelog"
+        }
+    }
+}
