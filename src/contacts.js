@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const shortid = require('shortid');
 
 const contactsPath = path.join(__dirname, 'db', 'contacts.json');
 
@@ -15,8 +16,10 @@ function listContacts() {
 function getContactById(contactId) {
     fs.readFile(contactsPath, (err, data) => {
         if (err) throw err;
-        const contacts = (JSON.parse(data));
-        const currentContact = contacts.find(contact => contact.id === contactId);
+        const contacts = JSON.parse(data);
+        const currentContact = contacts.find(
+            contact => contact.id === contactId,
+        );
         if (!currentContact) return console.log('Contact not found!');
         console.log(currentContact);
     });
@@ -26,9 +29,11 @@ function getContactById(contactId) {
 function removeContact(contactId) {
     fs.readFile(contactsPath, (err, data) => {
         if (err) throw err;
-        const contacts = (JSON.parse(data));
-        const filtredContacts = contacts.filter(contact => contact.id !== contactId);
-        fs.writeFile(contactsPath, JSON.stringify(filtredContacts), (err) => {
+        const contacts = JSON.parse(data);
+        const filtredContacts = contacts.filter(
+            contact => contact.id !== contactId,
+        );
+        fs.writeFile(contactsPath, JSON.stringify(filtredContacts), err => {
             if (err) throw err;
             console.log(`contact with id-${contactId} was removed`);
         });
@@ -38,16 +43,16 @@ function removeContact(contactId) {
 // TODO: create new contact and add to database with generated id, to get name, email and phone
 function addContact(name, email, phone) {
     const newContact = {
-        id: Date.now(),
         name,
         email,
-        phone
+        phone,
+        id: shortid.generate(),
     };
     fs.readFile(contactsPath, (err, data) => {
         if (err) throw err;
-        const contacts = (JSON.parse(data));
+        const contacts = JSON.parse(data);
         contacts.push(newContact);
-        fs.writeFile(contactsPath, JSON.stringify(contacts), (err) => {
+        fs.writeFile(contactsPath, JSON.stringify(contacts), err => {
             if (err) throw err;
             console.log(`Added new contact with id-${newContact.id}`);
         });
@@ -58,5 +63,5 @@ module.exports = {
     listContacts,
     getContactById,
     removeContact,
-    addContact
+    addContact,
 };
