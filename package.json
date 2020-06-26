@@ -5,9 +5,9 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node ./src/index.js",
-        "dev": "nodemon ./src/index.js",
-        " commit ": " git-cz "
+        "start": "npmx node ./src/index.js",
+        "dev": "npx nodemon ./src/index.js",
+        " commit ": "npx git-cz "
     },
     "repository": {
         "type": "git",
@@ -20,16 +20,25 @@
     },
     "homepage": "https://github.com/yamyn/nodejs-hw#readme",
     "devDependencies": {
-        "commitizen": "^4.0.3",
-        "cz-conventional-changelog": "^3.1.0",
-        "eslint": "^6.8.0",
-        "eslint-config-airbnb-base": "^14.0.0",
-        "eslint-plugin-import": "^2.20.1",
-        "nodemon": "^2.0.2"
+        "commitizen": "4.0.3",
+        "cz-conventional-changelog": "3.1.0",
+        "eslint": "6.8.0",
+        "eslint-config-airbnb-base": "14.0.0",
+        "eslint-plugin-import": "2.20.1",
+        "nodemon": "2.0.2"
     },
     "config": {
         "commitizen": {
             "path": "./node_modules/cz-conventional-changelog"
         }
+    },
+    "dependencies": {
+        "body-parser": "1.19.0",
+        "compression": "1.7.4",
+        "cors": "2.8.5",
+        "express": "4.17.1",
+        "helmet": "3.23.2",
+        "morgan": "1.10.0",
+        "shortid": "^2.2.15"
     }
 }
