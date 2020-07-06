@@ -1,35 +1,94 @@
 {
-    "name": "nodejs-hw",
-    "version": "1.0.0",
-    "description": "Home work for node.js course in GoIT Academy",
-    "main": "index.js",
+    "name": "emp-service",
+    "version": "0.0.1",
+    "description": "",
+    "author": "",
+    "private": true,
+    "license": "UNLICENSED",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node ./src/index.js",
-        "dev": "nodemon ./src/index.js",
-        " commit ": " git-cz "
+        "prebuild": "rimraf dist",
+        "prestart:prod": "npm i",
+        "build": "nest build",
+        "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+        "start": "nest start",
+        "start:dev": "nest start --watch",
+        "start:debug": "nest start --debug --watch",
+        "start:prod": "pm2 start dist/main.js -i max",
+        "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:cov": "jest --coverage",
+        "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+        "test:e2e": "jest --config ./test/jest-e2e.json",
+        "compodoc": "npx compodoc -p tsconfig.json -s -w",
+        "migrate:up": "npx migrate-mongo up -f ./mongo-migrations/migrate-mongo-config.js",
+        "migrate:down": "npx migrate-mongo down -f ./mongo-migrations/migrate-mongo-config.js",
+        "migrate:status": "npx migrate-mongo status -f ./mongo-migrations/migrate-mongo-config.js"
     },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/yamyn/nodejs-hw.git"
+    "dependencies": {
+        "@hapi/joi": "^17.1.1",
+        "@nestjs/common": "^7.0.0",
+        "@nestjs/core": "^7.0.0",
+        "@nestjs/platform-express": "^7.0.0",
+        "async": "^3.2.0",
+        "class-transformer": "^0.2.3",
+        "class-validator": "^0.11.1",
+        "compression": "^1.7.4",
+        "helmet": "^3.22.0",
+        "install": "^0.13.0",
+        "migrate-mongo": "^7.2.1",
+        "mongoose": "^5.9.7",
+        "nest-event": "^1.0.8",
+        "nest-router": "^1.0.9",
+        "npm": "^6.14.5",
+        "reflect-metadata": "^0.1.13",
+        "rimraf": "^3.0.2",
+        "rxjs": "^6.5.4",
+        "swagger-ui-express": "^4.1.4"
     },
-    "author": "Yaroslav Mynchenko",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/yamyn/nodejs-hw/issues"
-    },
-    "homepage": "https://github.com/yamyn/nodejs-hw#readme",
     "devDependencies": {
-        "commitizen": "^4.0.3",
-        "cz-conventional-changelog": "^3.1.0",
+        "@compodoc/compodoc": "^1.1.11",
+        "@nestjs/cli": "^7.0.0",
+        "@nestjs/config": "^0.4.0",
+        "@nestjs/mongoose": "^6.4.0",
+        "@nestjs/schematics": "^7.0.0",
+        "@nestjs/swagger": "^4.5.1",
+        "@nestjs/testing": "^7.0.0",
+        "@types/async": "^3.2.1",
+        "@types/express": "^4.17.3",
+        "@types/hapi__joi": "^16.0.12",
+        "@types/jest": "25.1.4",
+        "@types/mongoose": "^5.7.8",
+        "@types/multer": "^1.4.3",
+        "@types/node": "^13.9.1",
+        "@types/supertest": "^2.0.8",
+        "@types/underscore": "^1.9.4",
+        "@typescript-eslint/eslint-plugin": "^2.23.0",
+        "@typescript-eslint/parser": "^2.23.0",
         "eslint": "^6.8.0",
-        "eslint-config-airbnb-base": "^14.0.0",
+        "eslint-config-prettier": "^6.10.0",
         "eslint-plugin-import": "^2.20.1",
-        "nodemon": "^2.0.2"
+        "jest": "^25.1.0",
+        "prettier": "^1.19.1",
+        "supertest": "^4.0.2",
+        "ts-jest": "25.2.1",
+        "ts-loader": "^6.2.1",
+        "ts-node": "^8.6.2",
+        "tsconfig-paths": "^3.9.0",
+        "typescript": "^3.7.4"
     },
-    "config": {
-        "commitizen": {
-            "path": "./node_modules/cz-conventional-changelog"
-        }
+    "jest": {
+        "moduleFileExtensions": [
+            "js",
+            "json",
+            "ts"
+        ],
+        "rootDir": "src",
+        "testRegex": ".spec.ts$",
+        "transform": {
+            "^.+\\.(t|j)s$": "ts-jest"
+        },
+        "coverageDirectory": "../coverage",
+        "testEnvironment": "node"
     }
 }
