@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "npmx node ./src/index.js",
+        "start": "node ./src/index.js",
         "dev": "npx nodemon ./src/index.js",
         " commit ": "npx git-cz "
     },
@@ -33,6 +33,7 @@
         }
     },
     "dependencies": {
+        "@hapi/joi": "^17.1.1",
         "body-parser": "1.19.0",
         "compression": "1.7.4",
         "cors": "2.8.5",

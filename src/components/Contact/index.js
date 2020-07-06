@@ -1,4 +1,7 @@
-const ContactsModel = require('./model');
+const ContactsModel = require('./Model');
+const Validator = require('./Validation');
+const ValidError = require('../../error/ValidationError');
+const NotFoundError = require('../../error/NotFoundError');
 
 /**
  * @function
@@ -12,23 +15,18 @@ async function findAll(req, res, next) {
         const contacts = await ContactsModel.findAll();
 
         return res.status(200).json({
+            message: 'Success get all contacts',
             data: contacts,
         });
-        // res.status(200).render('index', {
-        //     csrfToken: req.csrfToken(),
-        //     template: 'users/table.ejs',
-        //     users,
-        //     errors: req.flash('error'),
-        //     successes: req.flash('sucsess'),
-        // });
     } catch (error) {
-        // res.status(500).render('errors/validError.ejs', {
-        //     method: 'get',
-        //     name: error.name,
-        //     message: null,
-        // });
+        const status = error.code || 500;
 
-        next(error);
+        res.status(status).json({
+            message: error.name,
+            details: error.message,
+        });
+
+        if (status === 500) next(error);
     }
 }
 
@@ -41,22 +39,23 @@ async function findAll(req, res, next) {
  */
 async function findById(req, res, next) {
     try {
-        const { id } = req.params;
+        const id = await Validator.deleteOrFindContactValidation(req.params);
 
         const contact = await ContactsModel.findById(id);
 
-        if (!contact) throw new Error(`Contact with id '${id}' not found!`);
-
         return res.status(200).json({
+            message: 'Success find contact',
             data: contact,
         });
     } catch (error) {
-        res.status(500).json({
+        const status = error.code || 500;
+
+        res.status(status).json({
             message: error.name,
             details: error.message,
         });
 
-        return next(error);
+        if (status === 500) next(error);
     }
 }
 
@@ -69,18 +68,23 @@ async function findById(req, res, next) {
  */
 async function create(req, res, next) {
     try {
-        const id = await ContactsModel.create(req.body);
+        const data = await Validator.createContactValidation(req.body);
 
-        return res.status(200).json({
-            data: `Contact create with id - '${id}'`,
+        const newContact = await ContactsModel.create(data);
+
+        return res.status(201).json({
+            message: 'Success create contact',
+            data: newContact,
         });
     } catch (error) {
-        res.status(500).json({
+        const status = error.code || 500;
+
+        res.status(status).json({
             message: error.name,
             details: error.message,
         });
 
-        next(error);
+        if (status === 500) next(error);
     }
 }
 
@@ -93,18 +97,23 @@ async function create(req, res, next) {
  */
 async function updateById(req, res, next) {
     try {
-        await ContactsModel.updateById(req.body.id, req.body);
+        const data = await Validator.updateContactValidation(req.body);
+
+        await ContactsModel.updateById(data);
 
         return res.status(200).json({
-            data: `Success update contact with id - '${req.body.id}'`,
+            message: 'Success update contact',
+            data: data,
         });
     } catch (error) {
-        res.status(500).json({
+        const status = error.code || 500;
+
+        res.status(status).json({
             message: error.name,
             details: error.message,
         });
 
-        next(error);
+        if (status === 500) next(error);
     }
 }
 
@@ -117,18 +126,22 @@ async function updateById(req, res, next) {
  */
 async function deleteById(req, res, next) {
     try {
-        await ContactsModel.deleteById(req.body.id);
+        const id = await Validator.deleteOrFindContactValidation(req.body);
+
+        await ContactsModel.deleteById(id);
 
         return res.status(200).json({
-            data: `Success delete contact with id - '${req.body.id}'`,
+            message: `Success delete contact with id - '${req.body.id}'`,
         });
     } catch (error) {
-        res.status(500).json({
+        const status = error.code || 500;
+
+        res.status(status).json({
             message: error.name,
             details: error.message,
         });
 
-        next(error);
+        if (status === 500) next(error);
     }
 }
 

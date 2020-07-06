@@ -1,4 +1,6 @@
-const Conection = require('../../config/conection');
+const Conection = require('../../config/Conection');
+const ValidError = require('../../error/ValidationError');
+const NotFoundError = require('../../error/NotFoundError');
 
 class ContactsModel {
     constructor() {
@@ -11,8 +13,13 @@ class ContactsModel {
 
     async findById(id) {
         const contacts = await this.db.getData();
+        const contact = contacts.find(contact => contact.id === id);
 
-        return contacts.find(contact => contact.id === id);
+        if (!contact) {
+            throw new NotFoundError(`Not found Contact with id - ${id}`);
+        }
+
+        return contact;
     }
 
     async create(data) {
@@ -22,23 +29,27 @@ class ContactsModel {
         );
 
         if (isDublicate) {
-            throw new Error(`Contact with email - ${data.email} already exist`);
+            throw new ValidError(
+                `Contact with email - ${data.email} already exist`,
+            );
         }
 
-        const id = this.db.genId();
-        const newContactsList = [{ id, ...data }, ...oldContacts];
+        const newContact = { id: this.db.genId(), ...data };
+        const newContactsList = [newContact, ...oldContacts];
 
         const isCreate = await this.db.writeData(newContactsList);
 
-        if (isCreate) return id;
+        if (isCreate) return newContact;
 
         throw new Error('Database error, don`t create new contact');
     }
 
-    async updateById(id, data) {
+    async updateById({ id, ...data }) {
         const oldContacts = await this.db.getData();
         const haveContact = oldContacts.some(contact => contact.id === id);
-        if (!haveContact) throw new Error(`Not found Contact with id - ${id}`);
+        if (!haveContact) {
+            throw new NotFoundError(`Not found Contact with id - ${id}`);
+        }
 
         const updatedContacts = oldContacts.map(contact => {
             if (contact.id !== id) return contact;
@@ -54,6 +65,11 @@ class ContactsModel {
 
     async deleteById(id) {
         const contacts = await this.db.getData();
+        const haveContact = contacts.some(contact => contact.id === id);
+        if (!haveContact) {
+            throw new NotFoundError(`Not found Contact with id - ${id}`);
+        }
+
         const filterdContacts = contacts.filter(contact => contact.id !== id);
 
         const isRemove = await this.db.writeData(filterdContacts);
