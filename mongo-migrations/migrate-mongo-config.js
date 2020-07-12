@@ -2,7 +2,7 @@ const path = require('path');
 const urlWithDbName =
     process.env.NODE_ENV === 'production'
         ? `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}`
-        : 'mongodb+srv://yamyn:qwerty123@cluster0-ojzwt.mongodb.net/db-contacts';
+        : 'mongodb://localhost:27017/db-contacts';
 const urlArr = urlWithDbName.split('/');
 const databaseName = urlArr.pop();
 const url = urlArr.join('/');
