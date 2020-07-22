@@ -1,7 +1,5 @@
 const ContactServices = require('./services');
 const Validator = require('./Validation');
-const ValidError = require('../../error/ValidationError');
-const NotFoundError = require('../../error/NotFoundError');
 
 /**
  * @function

@@ -31,9 +31,9 @@ module.exports = {
             res.header(
                 'Access-Control-Allow-Headers',
                 'Origin, X-Requested-With,' +
-                    ' Content-Type, Accept,' +
-                    ' Authorization,' +
-                    ' Access-Control-Allow-Credentials',
+                ' Content-Type, Accept,' +
+                ' Authorization,' +
+                ' Access-Control-Allow-Credentials',
             );
             next();
         });

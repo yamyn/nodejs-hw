@@ -1,6 +1,5 @@
 const express = require('express');
-const dotenv = require('dotenv');
-dotenv.config();
+require('dotenv').config();
 
 const middleware = require('../config/middleware');
 const routes = require('../config/router');
@@ -22,7 +21,7 @@ middleware.init(app);
 routes.init(app);
 
 /**
- * @description sets port 3000 to default or unless otherwise specified in the environment
+ * @description sets port 3030 to default or unless otherwise specified in the environment
  */
 app.set('port', process.env.PORT || 3030);
 
