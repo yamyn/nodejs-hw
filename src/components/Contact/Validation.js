@@ -1,5 +1,6 @@
 const Joi = require('@hapi/joi');
-const { isValid: validId } = require('shortid');
+// const { isValid: validId } = require('shortid');
+const { isValid: validId } = require('mongoose').Types.ObjectId;
 const ValidError = require('../../error/ValidationError');
 
 class ContactsValidator {
@@ -8,7 +9,7 @@ class ContactsValidator {
         this.validId = validId;
     }
 
-    invalidIdMessage = (id) => `id - ${id} is invalid!`;
+    invalidIdMessage = id => `id - ${id} is invalid!`;
 
     createContactValidation(data) {
         const shema = this.Joi.object()
@@ -52,7 +53,7 @@ class ContactsValidator {
                 reject(new ValidError(error.details));
             }
 
-            resolve(value);
+            resolve({ id, ...data });
         });
     }
 
@@ -62,14 +63,13 @@ class ContactsValidator {
             resolve(id);
         });
 
-
     isValidId(id) {
         const isId = this.validId(id);
 
-        return (reject) => {
+        return reject => {
             if (isId) return id;
-            return reject(new ValidError(this.invalidIdMessage(isId)))
-        }
+            return reject(new ValidError(this.invalidIdMessage(isId)));
+        };
     }
 }
 

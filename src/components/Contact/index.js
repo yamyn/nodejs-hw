@@ -1,7 +1,5 @@
-const ContactsModel = require('./Model');
+const ContactServices = require('./services');
 const Validator = require('./Validation');
-const ValidError = require('../../error/ValidationError');
-const NotFoundError = require('../../error/NotFoundError');
 
 /**
  * @function
@@ -12,7 +10,7 @@ const NotFoundError = require('../../error/NotFoundError');
  */
 async function findAll(req, res, next) {
     try {
-        const contacts = await ContactsModel.findAll();
+        const contacts = await ContactServices.findAll();
 
         return res.status(200).json({
             message: 'Success get all contacts',
@@ -41,7 +39,7 @@ async function findById(req, res, next) {
     try {
         const id = await Validator.deleteOrFindContactValidation(req.params);
 
-        const contact = await ContactsModel.findById(id);
+        const contact = await ContactServices.findById(id);
 
         return res.status(200).json({
             message: 'Success find contact',
@@ -70,8 +68,8 @@ async function create(req, res, next) {
     try {
         const data = await Validator.createContactValidation(req.body);
 
-        const newContact = await ContactsModel.create(data);
-
+        const newContact = await ContactServices.create(data);
+        console.log(newContact);
         return res.status(201).json({
             message: 'Success create contact',
             data: newContact,
@@ -99,7 +97,7 @@ async function updateById(req, res, next) {
     try {
         const data = await Validator.updateContactValidation(req.body);
 
-        await ContactsModel.updateById(data);
+        await ContactServices.updateById(data);
 
         return res.status(200).json({
             message: 'Success update contact',
@@ -128,7 +126,7 @@ async function deleteById(req, res, next) {
     try {
         const id = await Validator.deleteOrFindContactValidation(req.body);
 
-        await ContactsModel.deleteById(id);
+        await ContactServices.deleteById(id);
 
         return res.status(200).json({
             message: `Success delete contact with id - '${req.body.id}'`,

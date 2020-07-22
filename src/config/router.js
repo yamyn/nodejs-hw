@@ -13,7 +13,7 @@ module.exports = {
         const router = express.Router();
 
         /**
-         * Forwards any requests to the /contacts URI to UserRouter.
+         * Forwards any requests to the /contacts URI to ContactRouter.
          * @name /contacts
          * @function
          * @inner
