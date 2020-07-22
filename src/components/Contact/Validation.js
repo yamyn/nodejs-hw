@@ -1,15 +1,10 @@
-const Joi = require('@hapi/joi');
-// const { isValid: validId } = require('shortid');
-const { isValid: validId } = require('mongoose').Types.ObjectId;
-const ValidError = require('../../error/ValidationError');
+const Validator = require('../Validation');
 
-class ContactsValidator {
+
+class ContactsValidator extends Validator {
     constructor() {
-        this.Joi = Joi;
-        this.validId = validId;
+        super();
     }
-
-    invalidIdMessage = id => `id - ${id} is invalid!`;
 
     createContactValidation(data) {
         const shema = this.Joi.object()
@@ -25,16 +20,10 @@ class ContactsValidator {
             })
             .required();
 
-        return new Promise((resolve, reject) => {
-            const { error, value } = shema.validate(data);
-            if (error) {
-                reject(new ValidError(error.details));
-            }
-            resolve(value);
-        });
+        return this.createValidation(shema)(data);
     }
 
-    updateContactValidation({ id, ...data }) {
+    updateContactValidation(data) {
         const shema = this.Joi.object()
             .keys({
                 name: this.Joi.string()
@@ -45,31 +34,7 @@ class ContactsValidator {
             })
             .required();
 
-        return new Promise((resolve, reject) => {
-            this.isValidId(id)(reject);
-
-            const { error, value } = shema.validate(data);
-            if (error) {
-                reject(new ValidError(error.details));
-            }
-
-            resolve({ id, ...data });
-        });
-    }
-
-    deleteOrFindContactValidation = ({ id }) =>
-        new Promise((resolve, reject) => {
-            this.isValidId(id)(reject);
-            resolve(id);
-        });
-
-    isValidId(id) {
-        const isId = this.validId(id);
-
-        return reject => {
-            if (isId) return id;
-            return reject(new ValidError(this.invalidIdMessage(isId)));
-        };
+        return this.updateValidation(shema)(data);
     }
 }
 
