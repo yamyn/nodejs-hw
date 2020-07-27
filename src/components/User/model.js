@@ -8,7 +8,7 @@ const UserSchema = new Schema(
         email: {
             type: String,
             required: true,
-            unique: true
+            unique: true,
         },
         password: {
             type: String,
@@ -17,9 +17,9 @@ const UserSchema = new Schema(
         subscription: {
             type: String,
             enum: Object.values(subscriptionEnum),
-            default: subscriptionEnum.free
+            default: subscriptionEnum.free,
         },
-        token: String
+        token: String,
     },
     {
         timestamps: true,
@@ -29,10 +29,9 @@ const UserSchema = new Schema(
         collection: 'users',
         versionKey: false,
     },
-);
-
-UserSchema.post('save', async (user, next) => {
+).pre('save', async function (next) {
     try {
+        const user = this;
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(user.password, salt);
 
@@ -43,7 +42,7 @@ UserSchema.post('save', async (user, next) => {
     }
 });
 
-UserSchema.methods.comparePassword = async candidatePassword => {
+UserSchema.methods.comparePassword = async function (candidatePassword) {
     try {
         const match = await bcrypt.compare(candidatePassword, this.password);
 
@@ -54,5 +53,3 @@ UserSchema.methods.comparePassword = async candidatePassword => {
 };
 
 module.exports = connections.model('users', UserSchema);
-
-

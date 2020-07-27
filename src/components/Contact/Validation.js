@@ -1,6 +1,5 @@
 const Validator = require('../Validation');
 
-
 class ContactsValidator extends Validator {
     constructor() {
         super();

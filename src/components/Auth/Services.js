@@ -2,7 +2,9 @@ const UsersModel = require('../User/model');
 const UserService = require('../User/Services');
 const ValidError = require('../../error/ValidationError');
 const NotFoundError = require('../../error/NotFoundError');
+const UnauthorizedError = require('../../error/UnauthorizedError');
 const jwt = require('jsonwebtoken');
+const { SECRET: secret } = process.env;
 
 class AuthService {
     constructor() {
@@ -10,24 +12,28 @@ class AuthService {
     }
 
     /**
-     * @exports
      * @method create
      * @param {object} user
      * @summary create a new user
-     * @returns {Promise<String>}
+     * @returns {Promise<UsersModel>}
      */
     async createUser(data) {
         try {
-            const user = await UserService.create(data);
-            const accessToken = jwt.sign({ id: user._id }, secret, {
-                expiresIn: '60m'
-            });
-            const refreshToken = jwt.sign({ id: user._id }, secret, {
-                expiresIn: '90d'
-            });
-            await this.updateRefresh(user._id, refreshToken);
+            const { _id: id, email, subscription } = await UserService.create(
+                data,
+            );
+            const { accessToken, refreshToken } = this.parseTokens(id);
+            await this.updateRefresh(id, refreshToken);
 
-            return { ...user, accessToken, refreshToken }
+            return {
+                user: {
+                    id,
+                    email,
+                    subscription,
+                },
+                accessToken,
+                refreshToken,
+            };
         } catch (error) {
             throw error;
         }
@@ -35,7 +41,6 @@ class AuthService {
 
     /**
      * Find a user by id and update refreshToken
-     * @exports
      * @method updateById
      * @param {string} _id
      * @param {object} newData
@@ -45,10 +50,14 @@ class AuthService {
     async updateRefresh(_id, token) {
         try {
             const dbRes = await this.model
-                .findByIdAndUpdate({ _id }, token, {
-                    new: true,
-                    useFindAndModify: false,
-                })
+                .findByIdAndUpdate(
+                    { _id },
+                    { token },
+                    {
+                        new: true,
+                        useFindAndModify: false,
+                    },
+                )
                 .exec();
 
             if (!dbRes) {
@@ -63,22 +72,60 @@ class AuthService {
         }
     }
 
-    /**
-     * @exports
-     * @method deleteById
-     * @param {string} _id
-     * @summary delete a user from database
-     * @returns {Promise<void>}
-     */
-    async deleteById(_id) {
+    async getTokensByRefresh(oldToken) {
         try {
-            const dbRes = await this.model.findByIdAndDelete({ _id }).exec();
+            const { id } = jwt.verify(oldToken, secret);
+            const user = await UserService.findById(id);
+            console.log(user);
+            if (user && user.token === oldToken) {
+                const { accessToken, refreshToken } = this.parseTokens(id);
+                await this.updateRefresh(id, refreshToken);
+                const { email, subscription } = user;
 
-            if (!dbRes) {
-                throw new NotFoundError(`Not found User with id - ${_id}`);
+                return {
+                    user: {
+                        id,
+                        email,
+                        subscription,
+                    },
+                    accessToken,
+                    refreshToken,
+                };
             }
 
-            return;
+            throw new UnauthorizedError('Not authorized');
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    /**
+     * @method getUser
+     * @param {data} user
+     * @summary find user by email and compare password
+     * @returns {Promise<void>}
+     */
+    async getUser({ email, password }) {
+        try {
+            const user = await this.model.findOne({ email });
+            const isMatched = user && (await user.comparePassword(password));
+            if (!isMatched) {
+                throw new ValidError(`Invalid login or password`);
+            }
+            const { _id: id, subscription } = user;
+            const { accessToken, refreshToken } = this.parseTokens(id);
+
+            await this.updateRefresh(id, refreshToken);
+
+            return {
+                user: {
+                    id,
+                    email,
+                    subscription,
+                },
+                accessToken,
+                refreshToken,
+            };
         } catch (error) {
             if (error.name === 'MongoError') {
                 throw new ValidError(error.message);
@@ -86,6 +133,26 @@ class AuthService {
 
             throw error;
         }
+    }
+
+    /**
+     * @method parseTokens
+     * @param {id} string
+     * @summary delete a user from database
+     * @returns {Promise<void>}
+     */
+    parseTokens(id) {
+        const accessToken = jwt.sign({ id }, secret, {
+            expiresIn: '60m',
+        });
+        const refreshToken = jwt.sign({ id }, secret, {
+            expiresIn: '90d',
+        });
+
+        return {
+            accessToken,
+            refreshToken,
+        };
     }
 }
 

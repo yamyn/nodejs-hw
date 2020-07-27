@@ -13,12 +13,10 @@ class UsersValidator extends Validator {
                     .pattern(/^[a-zA-Z ]{3,20}$/)
                     .trim()
                     .required(),
-                email: this.Joi.string()
-                    .trim()
-                    .email()
-                    .required(),
-                subscription: this.Joi.string()
-                    .valid(...Object.values(subscriptionEnum))
+                email: this.Joi.string().trim().email().required(),
+                subscription: this.Joi.string().valid(
+                    ...Object.values(subscriptionEnum),
+                ),
             })
             .required();
 
@@ -30,7 +28,7 @@ class UsersValidator extends Validator {
             .keys({
                 subscription: this.Joi.string()
                     .valid(...Object.values(subscriptionEnum))
-                    .required()
+                    .required(),
             })
             .required();
 

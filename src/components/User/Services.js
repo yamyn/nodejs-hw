@@ -1,6 +1,7 @@
 const UsersModel = require('./model');
 const ValidError = require('../../error/ValidationError');
 const NotFoundError = require('../../error/NotFoundError');
+const DuplicateKeyError = require('../../error/DuplicateKeyError');
 
 class UsersService {
     constructor() {
@@ -45,6 +46,9 @@ class UsersService {
         try {
             return await this.model.create(user);
         } catch (error) {
+            if (error.code === 11000) {
+                throw new DuplicateKeyError(error.message);
+            }
             if (error.name === 'MongoError') {
                 throw new ValidError(error.message);
             }
