@@ -2,6 +2,7 @@ const UsersModel = require('./model');
 const ValidError = require('../../error/ValidationError');
 const NotFoundError = require('../../error/NotFoundError');
 const DuplicateKeyError = require('../../error/DuplicateKeyError');
+const AvatarUploader = require('./utils/AvatarUploader.util');
 
 class UsersService {
     constructor() {
@@ -44,7 +45,17 @@ class UsersService {
      */
     async create(user) {
         try {
-            return await this.model.create(user);
+            const avatar = await AvatarUploader.getSimpleAvatar(
+                user.email,
+                user.gender,
+            );
+            const avatarURL = await AvatarUploader.uploadFile(
+                avatar,
+                user.email,
+                'png',
+            );
+
+            return await this.model.create({ ...user, avatarURL });
         } catch (error) {
             if (error.code === 11000) {
                 throw new DuplicateKeyError(error.message);
@@ -103,6 +114,33 @@ class UsersService {
             }
 
             return;
+        } catch (error) {
+            if (error.name === 'MongoError') {
+                throw new ValidError(error.message);
+            }
+
+            throw error;
+        }
+    }
+
+    /**
+     * @exports
+     * @method  uploadAvatar
+     * @param {object} file
+     * @summary upload avatar to cloud and get link
+     * @returns {Promise<void>}
+     */
+    async uploadAvatar(user, { originalname, path }) {
+        try {
+            const avatarURL = await AvatarUploader.uploadAvatar(
+                user.email,
+                originalname,
+                path,
+            );
+            console.log(avatarURL);
+            await this.model.findByIdAndUpdate({ _id: user.id }, { avatarURL });
+
+            return avatarURL;
         } catch (error) {
             if (error.name === 'MongoError') {
                 throw new ValidError(error.message);

@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const { Schema } = require('mongoose');
-const { subscriptionEnum } = require('./enums');
+const { subscriptionEnum, genderEnum } = require('./enums');
 const connections = require('../../config/conection');
 
 const UserSchema = new Schema(
@@ -12,6 +12,12 @@ const UserSchema = new Schema(
         },
         password: {
             type: String,
+            required: true,
+        },
+        avatarURL: String,
+        gender: {
+            type: String,
+            enum: Object.values(genderEnum),
             required: true,
         },
         subscription: {

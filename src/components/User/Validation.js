@@ -1,5 +1,5 @@
 const Validator = require('../Validation');
-const { subscriptionEnum } = require('./enums');
+const { subscriptionEnum, genderEnum } = require('./enums');
 
 class UsersValidator extends Validator {
     constructor() {
@@ -17,6 +17,7 @@ class UsersValidator extends Validator {
                 subscription: this.Joi.string().valid(
                     ...Object.values(subscriptionEnum),
                 ),
+                gender: this.Joi.string().valid(...Object.values(genderEnum)),
             })
             .required();
 

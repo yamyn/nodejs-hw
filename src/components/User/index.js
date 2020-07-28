@@ -143,10 +143,36 @@ async function deleteById(req, res, next) {
     }
 }
 
+async function uploadAvatar(req, res, next) {
+    try {
+        const { user, file } = req;
+
+        const newAvatar = await UserServices.uploadAvatar(user, file);
+
+        return res.status(200).json({
+            user: {
+                ...user,
+                avatarURL: newAvatar,
+            },
+            message: 'Success update avatar',
+        });
+    } catch (error) {
+        const status = error.code || 500;
+
+        res.status(status).json({
+            message: error.name,
+            details: error.message,
+        });
+
+        if (status === 500) next(error);
+    }
+}
+
 module.exports = {
     findAll,
     findById,
     create,
     updateById,
     deleteById,
+    uploadAvatar,
 };

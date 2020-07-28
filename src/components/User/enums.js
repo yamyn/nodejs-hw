@@ -1,9 +1,15 @@
 const subscriptionEnum = {
     free: 'free',
     pro: 'pro',
-    premium: 'premium'
+    premium: 'premium',
+};
+
+const genderEnum = {
+    male: 'male',
+    female: 'female',
 };
 
 module.exports = {
-    subscriptionEnum
+    subscriptionEnum,
+    genderEnum,
 };

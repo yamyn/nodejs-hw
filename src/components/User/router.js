@@ -1,4 +1,6 @@
 const { Router } = require('express');
+const multer = require('multer');
+const upload = multer({ dest: 'public/avatars' });
 const UserComponent = require('../User');
 
 /**
@@ -57,5 +59,19 @@ router.put('/', UserComponent.updateById);
  * @param {callback} middleware - Express middleware
  */
 router.delete('/', UserComponent.deleteById);
+
+/**
+ * Route serving a post avatar
+ * @name /users
+ * @function
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware
+ */
+router.post(
+    '/upload-avatar',
+    upload.single('avatar'),
+    UserComponent.uploadAvatar,
+);
 
 module.exports = router;

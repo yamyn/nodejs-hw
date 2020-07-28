@@ -5,6 +5,7 @@ const adminProfile = {
     password: 'admin',
     subscription: 'premium',
     token: null,
+    gender: 'male',
 };
 
 module.exports = {
