@@ -1,35 +1,34 @@
 const Validator = require('../Validation');
+const { subscriptionEnum } = require('./enums');
 
-class ContactsValidator extends Validator {
+class UsersValidator extends Validator {
     constructor() {
         super();
     }
 
-    createContactValidation(data) {
+    createUserValidation(data) {
         const shema = this.Joi.object()
             .keys({
-                name: this.Joi.string()
+                password: this.Joi.string()
                     .pattern(/^[a-zA-Z ]{3,20}$/)
                     .trim()
                     .required(),
                 email: this.Joi.string().trim().email().required(),
-                phone: this.Joi.string()
-                    .pattern(/^[0-9]{10}$/)
-                    .required(),
+                subscription: this.Joi.string().valid(
+                    ...Object.values(subscriptionEnum),
+                ),
             })
             .required();
 
         return this.createValidation(shema)(data);
     }
 
-    updateContactValidation(data) {
+    updateUserValidation(data) {
         const shema = this.Joi.object()
             .keys({
-                name: this.Joi.string()
-                    .pattern(/^[a-zA-Z ]{3,20}$/)
-                    .trim(),
-                email: this.Joi.string().trim().email(),
-                phone: this.Joi.string().pattern(/^[0-9]{10}$/),
+                subscription: this.Joi.string()
+                    .valid(...Object.values(subscriptionEnum))
+                    .required(),
             })
             .required();
 
@@ -37,4 +36,4 @@ class ContactsValidator extends Validator {
     }
 }
 
-module.exports = new ContactsValidator();
+module.exports = new UsersValidator();

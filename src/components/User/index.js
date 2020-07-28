@@ -1,4 +1,4 @@
-const ContactServices = require('./Services');
+const UserServices = require('./Services');
 const Validator = require('./Validation');
 
 /**
@@ -10,14 +10,11 @@ const Validator = require('./Validation');
  */
 async function findAll(req, res, next) {
     try {
-        const { user, query } = req;
-
-        const contacts = await ContactServices.findAll(user.id, query);
+        const users = await UserServices.findAll();
 
         return res.status(200).json({
-            user,
-            message: 'Success get all contacts',
-            data: contacts,
+            message: 'Success get all users',
+            data: users,
         });
     } catch (error) {
         const status = error.code || 500;
@@ -40,15 +37,13 @@ async function findAll(req, res, next) {
  */
 async function findById(req, res, next) {
     try {
-        const { user, params } = req;
-        const id = await Validator.deleteOrFindValidation(params);
+        const id = await Validator.deleteOrFindValidation(req.params);
 
-        const contact = await ContactServices.findById(id, user.id);
+        const user = await UserServices.findById(id);
 
         return res.status(200).json({
-            user,
-            message: 'Success find contact',
-            data: contact,
+            message: 'Success find user',
+            data: user,
         });
     } catch (error) {
         const status = error.code || 500;
@@ -71,16 +66,13 @@ async function findById(req, res, next) {
  */
 async function create(req, res, next) {
     try {
-        const { body, user } = req;
-        const data = await Validator.createContactValidation(body);
-        data.user = user.id;
+        const data = await Validator.createUserValidation(req.body);
 
-        const newContact = await ContactServices.create(data);
+        const { password, ...newUser } = await UserServices.create(data);
 
         return res.status(201).json({
-            user,
-            message: 'Success create contact',
-            data: newContact,
+            message: 'Success create user',
+            data: newUser,
         });
     } catch (error) {
         const status = error.code || 500;
@@ -103,16 +95,12 @@ async function create(req, res, next) {
  */
 async function updateById(req, res, next) {
     try {
-        const { user, body } = req;
-        const data = await Validator.updateContactValidation(body);
+        const data = await Validator.updateUserValidation(req.body);
 
-        data.user = user.id;
-
-        await ContactServices.updateById(data);
+        await UserServices.updateById(data);
 
         return res.status(200).json({
-            user,
-            message: 'Success update contact',
+            message: 'Success update user',
             data: data,
         });
     } catch (error) {
@@ -136,15 +124,12 @@ async function updateById(req, res, next) {
  */
 async function deleteById(req, res, next) {
     try {
-        const { user, body } = req;
+        const id = await Validator.deleteOrFindValidation(req.body);
 
-        const id = await Validator.deleteOrFindValidation(body);
-
-        await ContactServices.deleteById(id, user.id);
+        await UserServices.deleteById(id);
 
         return res.status(200).json({
-            user,
-            message: `Success delete contact with id - '${body.id}'`,
+            message: `Success delete user with id - '${req.body.id}'`,
         });
     } catch (error) {
         const status = error.code || 500;
