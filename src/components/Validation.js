@@ -11,20 +11,20 @@ class Validator {
     invalidIdMessage = id => `id - ${id} is invalid!`;
 
     createValidation(shema) {
-        return (data) => {
+        return data => {
             return new Promise((resolve, reject) => {
                 const { error, value } = shema.validate(data);
                 if (error) {
                     reject(new ValidError(error.details));
                 }
                 resolve(value);
-            })
+            });
         };
     }
 
     updateValidation(shema) {
         return ({ id, ...data }) => {
-            new Promise((resolve, reject) => {
+            return new Promise((resolve, reject) => {
                 this.isValidId(id)(reject);
 
                 const { error, value } = shema.validate(data);
@@ -33,7 +33,7 @@ class Validator {
                 }
 
                 resolve({ id, ...value });
-            })
+            });
         };
     }
 

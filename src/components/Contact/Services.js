@@ -11,23 +11,24 @@ class ContactsService {
     /**
      * @exports
      * @method findAll
-     * @param {}
+     * @param {string} id
      * @summary get list of all contacts
      * @returns Promise<ContactModel[]>
      */
-    findAll() {
-        return this.model.find({}).exec();
+    findAll(id) {
+        return this.model.find({ user: id }).exec();
     }
 
     /**
      * @exports
      * @method findById
      * @param {string} _id
+     * @param {string}  userId
      * @summary get a contact
      * @returns {Promise<ContactModel>}
      */
-    async findById(_id) {
-        const contact = await this.model.findById(_id).exec();
+    async findById(_id, userId) {
+        const contact = await this.model.findOne({ _id, user: userId }).exec();
         if (!contact) {
             throw new NotFoundError(`Not found Contact with id - ${_id}`);
         }
@@ -44,11 +45,18 @@ class ContactsService {
      */
     async create(contact) {
         try {
+            const contacts = await this.findAll(contact.user);
+            const isDuplicate = await contacts.some(
+                ({ email }) => contact.email === email,
+            );
+            if (isDuplicate) {
+                throw new DuplicateKeyError(
+                    `Contact with email ${contact.email}, already exist`,
+                );
+            }
+
             return await this.model.create(contact);
         } catch (error) {
-            if (error.code === 11000) {
-                throw new DuplicateKeyError(error.message);
-            }
             if (error.name === 'MongoError') {
                 throw new ValidError(error.message);
             }
@@ -66,17 +74,17 @@ class ContactsService {
      * @summary update a contact's document
      * @returns {Promise<void>}
      */
-    async updateById({ id, ...newData }) {
+    async updateById({ id: _id, user, ...newData }) {
         try {
             const dbRes = await this.model
-                .findByIdAndUpdate({ _id: id }, newData, {
+                .findOneAndUpdate({ _id, user }, newData, {
                     new: true,
                     useFindAndModify: false,
                 })
                 .exec();
 
             if (!dbRes) {
-                throw new NotFoundError(`Not found Contact with id - ${id}`);
+                throw new NotFoundError(`Not found Contact with id - ${_id}`);
             }
         } catch (error) {
             if (error.name === 'MongoError') {
@@ -94,10 +102,12 @@ class ContactsService {
      * @summary delete a contact from database
      * @returns {Promise<void>}
      */
-    async deleteById(_id) {
+    async deleteById(_id, userId) {
         try {
-            const dbRes = await this.model.findByIdAndDelete({ _id }).exec();
-            console.log(dbRes);
+            const dbRes = await this.model
+                .findOneAndDelete({ _id, user: userId })
+                .exec();
+
             if (!dbRes) {
                 throw new NotFoundError(`Not found Contact with id - ${_id}`);
             }

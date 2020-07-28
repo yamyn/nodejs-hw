@@ -20,6 +20,12 @@ const UserSchema = new Schema(
             default: subscriptionEnum.free,
         },
         token: String,
+        contacts: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'contacts',
+            },
+        ],
     },
     {
         timestamps: true,

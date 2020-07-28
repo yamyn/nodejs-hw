@@ -10,9 +10,11 @@ const Validator = require('./Validation');
  */
 async function findAll(req, res, next) {
     try {
-        const contacts = await ContactServices.findAll();
+        const { user } = req;
+        const contacts = await ContactServices.findAll(user.id);
 
         return res.status(200).json({
+            user,
             message: 'Success get all contacts',
             data: contacts,
         });
@@ -37,11 +39,13 @@ async function findAll(req, res, next) {
  */
 async function findById(req, res, next) {
     try {
-        const id = await Validator.deleteOrFindValidation(req.params);
+        const { user, params } = req;
+        const id = await Validator.deleteOrFindValidation(params);
 
-        const contact = await ContactServices.findById(id);
+        const contact = await ContactServices.findById(id, user.id);
 
         return res.status(200).json({
+            user,
             message: 'Success find contact',
             data: contact,
         });
@@ -66,11 +70,14 @@ async function findById(req, res, next) {
  */
 async function create(req, res, next) {
     try {
-        const data = await Validator.createContactValidation(req.body);
+        const { body, user } = req;
+        const data = await Validator.createContactValidation(body);
+        data.user = user.id;
 
         const newContact = await ContactServices.create(data);
 
         return res.status(201).json({
+            user,
             message: 'Success create contact',
             data: newContact,
         });
@@ -95,11 +102,15 @@ async function create(req, res, next) {
  */
 async function updateById(req, res, next) {
     try {
-        const data = await Validator.updateContactValidation(req.body);
+        const { user, body } = req;
+        const data = await Validator.updateContactValidation(body);
+
+        data.user = user.id;
 
         await ContactServices.updateById(data);
 
         return res.status(200).json({
+            user,
             message: 'Success update contact',
             data: data,
         });
@@ -124,12 +135,15 @@ async function updateById(req, res, next) {
  */
 async function deleteById(req, res, next) {
     try {
-        const id = await Validator.deleteOrFindValidation(req.body);
+        const { user, body } = req;
 
-        await ContactServices.deleteById(id);
+        const id = await Validator.deleteOrFindValidation(body);
+
+        await ContactServices.deleteById(id, user.id);
 
         return res.status(200).json({
-            message: `Success delete contact with id - '${req.body.id}'`,
+            user,
+            message: `Success delete contact with id - '${body.id}'`,
         });
     } catch (error) {
         const status = error.code || 500;
