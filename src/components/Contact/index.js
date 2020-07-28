@@ -10,8 +10,9 @@ const Validator = require('./Validation');
  */
 async function findAll(req, res, next) {
     try {
-        const { user } = req;
-        const contacts = await ContactServices.findAll(user.id);
+        const { user, query } = req;
+
+        const contacts = await ContactServices.findAll(user.id, query);
 
         return res.status(200).json({
             user,

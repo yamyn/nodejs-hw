@@ -15,8 +15,8 @@ class ContactsService {
      * @summary get list of all contacts
      * @returns Promise<ContactModel[]>
      */
-    findAll(id) {
-        return this.model.find({ user: id }).exec();
+    findAll(id, options) {
+        return this.model.paginate({ user: id }, options);
     }
 
     /**
