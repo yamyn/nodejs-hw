@@ -48,6 +48,6 @@ npm start
 ## This App have Open-api documentation
 
 ```
-http://localhost:3030/api/explore
+http://localhost:3030/api/explorer
 
 ```
