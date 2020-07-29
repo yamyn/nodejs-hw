@@ -30,6 +30,10 @@ class UsersValidator extends Validator {
                 subscription: this.Joi.string()
                     .valid(...Object.values(subscriptionEnum))
                     .required(),
+                password: this.Joi.string()
+                    .pattern(/^[a-zA-Z ]{3,20}$/)
+                    .trim(),
+                gender: this.Joi.string().valid(...Object.values(genderEnum)),
             })
             .required();
 
