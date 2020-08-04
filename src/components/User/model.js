@@ -26,6 +26,7 @@ const UserSchema = new Schema(
             default: subscriptionEnum.free,
         },
         token: String,
+        verificationToken: String,
         contacts: [
             {
                 type: Schema.Types.ObjectId,

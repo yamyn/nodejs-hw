@@ -17,7 +17,35 @@ async function signup(req, res, next) {
             status: 201,
             logged: true,
             data: user,
-            message: 'Sign in successfull',
+            message: 'Sign in successfull. Please check your email for verification account',
+        });
+    } catch (error) {
+        const status = error.code || 500;
+
+        res.status(status).json({
+            message: error.name,
+            details: error.message,
+        });
+
+        if (status === 500) next(error);
+    }
+}
+
+/**
+ * @param {Request} req
+ * @param {Response} res
+ * @param {NextFunction} next
+ * @returns {Promise < void >}
+ */
+async function verifyEmail(req, res, next) {
+    try {
+        const { verificationToken } = req.params
+        console.log(verificationToken);
+        await AuthService.checkVerify(verificationToken);
+
+        res.json({
+            status: 200,
+            message: 'Your email verify successfull!',
         });
     } catch (error) {
         const status = error.code || 500;
@@ -111,4 +139,5 @@ module.exports = {
     getTokens,
     signup,
     login,
+    verifyEmail,
 };
