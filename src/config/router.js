@@ -1,5 +1,7 @@
 const express = require('express');
 const http = require('http');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('../common/swager/swagger-json');
 const jwtConfig = require('./middleware/jwtAuth');
 const ContactRouter = require('../components/Contact/router');
 const UserRouter = require('../components/User/router');
@@ -46,13 +48,25 @@ module.exports = {
         app.use('/api/users', jwtConfig.isAuthenticated, UserRouter);
 
         /**
+         * Route serving documentation for this api.
+         * @name /explorer
+         * @function
+         * @inner
+         * @param {string} path - Express path
+         * @param {callback} middleware - Express middleware.
+         */
+        app.use('/api/explorer', swaggerUi.serve, (...args) =>
+            swaggerUi.setup(swaggerDocument)(...args),
+        );
+
+        /**
          * @description No results returned mean the object is not found
          * @function
          * @inner
          * @param {callback} middleware - Express middleware.
          */
         app.use((req, res) => {
-            res.status(404).send(http.STATUS_CODES[404]);
+            res.redirect('/api/explorer');
         });
 
         /**

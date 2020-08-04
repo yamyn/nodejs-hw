@@ -2,48 +2,52 @@
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-### Find all Contacts
+## Requirements
+
+-   node >= 12
+-   npm >= 6
+
+## Installation
+
+### Install Dependencies
+
+```bash
+npm install
 
 ```
-    curl --location --request GET 'localhost:3000/api/contacts/' \
-```
 
-### Find Contact
+### Environment
 
-```
-    curl --location --request GET 'localhost:3000/api/contacts/:userId' \
-    --header 'Content-Type: application/json' \
-```
+You need to create and populate the .env file according to sample.env
 
-### Create Contact
+### Up db migrations
 
-```
-    curl --location --request POST 'localhost:3000/api/contacts/' \
-    --header 'Content-Type: application/json' \
-    --data-raw '{
-        "name": "Mango",
-        "email": "mango@gmail.com",
-        "phone": "322-22-22"
-    }'
-```
+Make all migrations to current db architecture:
 
-### Update Contact
+```bash
+npm run migrate:up
 
 ```
-    curl --location --request PUT 'localhost:3000/api/contacts/' \
-    --header 'Content-Type: application/json' \
-    --data-raw '{
-       "name": "Allan Raymond",
-       "id" : "m9TV8hdsx"
-    }'
-```
 
-### Delete User
+### Start app
+
+For development:
+
+```bash
+npm run dev
 
 ```
-    curl --location --request DELETE 'localhost:3000/api/contacts/' \
-    --header 'Content-Type: application/json' \
-    --data-raw '{
-          "id" : "m9TV8hdsx"
-    }'
+
+For production:
+
+```bash
+npm start
+
+```
+
+## This App have Open-api documentation
+
+```
+http://localhost:3030/api/explorer
+
 ```

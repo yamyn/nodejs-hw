@@ -19,9 +19,12 @@ class AuthService {
      */
     async createUser(data) {
         try {
-            const { _id: id, email, subscription } = await UserService.create(
-                data,
-            );
+            const {
+                _id: id,
+                email,
+                subscription,
+                avatarURL,
+            } = await UserService.create(data);
             const { accessToken, refreshToken } = this.parseTokens(id);
             await this.updateRefresh(id, refreshToken);
 
@@ -30,6 +33,7 @@ class AuthService {
                     id,
                     email,
                     subscription,
+                    avatarURL,
                 },
                 accessToken,
                 refreshToken,

@@ -20,11 +20,12 @@ async function isAuthenticated(req, res, next) {
             const {
                 email,
                 subscription,
+                avatarURL,
                 token: refreshToken,
             } = await UserService.findById(id);
             if (!refreshToken) throw new UnauthorizedError('Not authorized');
 
-            req.user = { id, email, subscription };
+            req.user = { id, email, subscription, avatarURL };
 
             return next();
         } catch (error) {
