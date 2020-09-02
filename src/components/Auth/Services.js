@@ -1,9 +1,12 @@
+
+const jwt = require('jsonwebtoken');
 const UsersModel = require('../User/model');
 const UserService = require('../User/Services');
 const ValidError = require('../../error/ValidationError');
 const NotFoundError = require('../../error/NotFoundError');
 const UnauthorizedError = require('../../error/UnauthorizedError');
-const jwt = require('jsonwebtoken');
+const EmailVerificator = require('./utils/Sendgrid.util')
+
 const { SECRET: secret } = process.env;
 
 class AuthService {
@@ -19,12 +22,17 @@ class AuthService {
      */
     async createUser(data) {
         try {
+            const verificationToken = await EmailVerificator.generateToken(data.email);
+
             const {
                 _id: id,
                 email,
                 subscription,
                 avatarURL,
-            } = await UserService.create(data);
+            } = await UserService.create({ ...data, verificationToken });
+
+            await EmailVerificator.sendMesage(data.email, verificationToken);
+
             const { accessToken, refreshToken } = this.parseTokens(id);
             await this.updateRefresh(id, refreshToken);
 
@@ -80,7 +88,7 @@ class AuthService {
         try {
             const { id } = jwt.verify(oldToken, secret);
             const user = await UserService.findById(id);
-            console.log(user);
+
             if (user && user.token === oldToken) {
                 const { accessToken, refreshToken } = this.parseTokens(id);
                 await this.updateRefresh(id, refreshToken);
@@ -157,6 +165,20 @@ class AuthService {
             accessToken,
             refreshToken,
         };
+    }
+
+    async checkVerify(verificationToken) {
+        const user = await this.model.findOneAndUpdate({ verificationToken }, { verificationToken: null }, {
+            new: true,
+            useFindAndModify: false,
+        }).exec();
+
+        if (!user) {
+            throw new NotFoundError('User not found!!!');
+        }
+        if (user.verificationToken !== null) {
+            throw new Error('Woooops, some thing wrong, please try again');
+        }
     }
 }
 
