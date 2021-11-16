@@ -38,7 +38,7 @@
     "dependencies": {
         "@hapi/joi": "17.1.1",
         "avatar-generator": "2.0.4",
-        "aws-sdk": "2.721.0",
+        "aws-sdk": "2.814.0",
         "bcrypt": "5.0.0",
         "body-parser": "1.19.0",
         "compression": "1.7.4",
